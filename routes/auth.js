@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 /* GET home page */
-router.get("/user", (req, res, next) => {
+router.get("/users", (req, res, next) => {
   User.find().then(users => {
     res.json(users);
   });
