@@ -9,6 +9,8 @@ const mongoose = require("mongoose");
 const logger = require("morgan");
 const path = require("path");
 
+const stripe = require("stripe")("sk_test_0imLi4pnBx4iOJAwek29PpeU");
+
 mongoose
   .connect(
     "mongodb://nourcs:redalert2@ds135217.mlab.com:35217/fortnite-gambling",
@@ -37,6 +39,23 @@ app.use(function(req, res, next) {
     "Origin, X-Requested-With, Content-Type, Accept"
   );
   next();
+});
+
+app.use(bodyParser.text());
+
+app.post("/charge", async (req, res) => {
+  try {
+    let { status } = await stripe.charges.create({
+      amount: 2000,
+      currency: "usd",
+      description: "An example charge",
+      source: req.body
+    });
+
+    res.json({ status });
+  } catch (err) {
+    res.status(500).end();
+  }
 });
 
 // Middleware Setup

@@ -60,11 +60,20 @@ router.post("/handlepackage", (req, res, next) => {
     console.log(randomNumber);
     Winner.create({ packageName, user: pack.entry[randomNumber] }).then(
       winner => {
-        res.json(winner);
+        User.findById(winner.user).then(user => {
+          const msg = {
+            to: user.email,
+            from: "fortnite@gambling.app",
+            subject: `Congratulations! You won ${packageName} V-Bucks`,
+            // text: "Asba"
+            html: "<strong>Contact us ASAP!</strong>"
+          };
+          sgMail.send(msg);
+          res.json({ winner, msg });
+        });
       }
     );
   });
-  // Math.random() * (max - min) + min;
 });
 
 router.post("/winners", (req, res, next) => {
@@ -78,16 +87,4 @@ router.post("/winners", (req, res, next) => {
     });
 });
 
-router.post("/emailwinner", (req, res, next) => {
-  // let { to } = req.body;
-  const msg = {
-    to: "nourcherifsoussi@gmail.com",
-    from: "customer@fgambling.com",
-    subject: "Sending with Twilio SendGrid is Fun",
-    text: "and easy to do anywhere, even with Node.js",
-    html: "<strong>and easy to do anywhere, even with Node.js</strong>"
-  };
-  sgMail.send(msg);
-  res.json(msg);
-});
 module.exports = router;
